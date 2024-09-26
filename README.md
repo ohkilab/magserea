@@ -1,2 +1,1 @@
-# LabellessFace: Fair Metric Learning for Face Recognition without Attribute Labels
-
+# MagSerea: Fingerprinting Magnetic Field of Specified Area with Wearable Sensors
