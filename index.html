@@ -159,201 +159,10 @@
     </div>
   </section>
   <!-- End paper abstract -->
-<!-- Load MathJax for rendering LaTeX -->
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-</script>
-
-<!-- Proposed Method Section -->
-<section class="section proposed-method">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Proposed Method</h2>
-        <div class="content has-text-justified">
-
-          <div class="content has-text-justified">
-            <h3 class="title is-4">Obtaining Sensor Information</h3>
-            <p>
-              Magnetic and angular velocity data are collected along three axes. The magnetic data is used as the location fingerprint, while the angular velocity data assists in preprocessing the magnetic information.
-            </p>
-          
-            <h3 class="title is-4">Preprocessing</h3>
-            <p>
-              Preprocessing involves several steps to prepare the data for analysis. First, high-frequency noise in the magnetic and angular velocity data is filtered using an RC low-pass filter to retain important low-frequency information:
-            </p>
-            <p>
-              $$ S_{\text{filtered}} = \alpha \cdot S_{\text{current}} + (1 - \alpha) \cdot S_{\text{previous}} $$
-            </p>
-            <p>
-              Here, \( S_{\text{filtered}} \) is the filtered sensor information, \( S_{\text{current}} \) is the newly acquired data, and \( S_{\text{previous}} \) represents the previously recorded data. The coefficient \( \alpha \) is set to 0.8.
-            </p>
-            <p>
-              After filtering, the system extracts the specific action section related to door-opening by detecting peaks in the angular velocity data. This isolates the portion where the wrist rotates during doorknob manipulation. Next, normalization is applied to address internal magnetism fluctuations from the device, which can affect the magnetic data. The magnetic data is standardized using:
-            </p>
-            <p>
-              $$ x' = \frac{x - \bar{x}}{s} $$
-            </p>
-            <p>
-              Here, \( x' \) is the normalized data, \( x \) is the original data point, \( \bar{x} \) is the mean, and \( s \) is the standard deviation. This ensures data from different sessions can be consistently compared.
-            </p>
-            <p>
-              To ensure uniform data lengths across all location fingerprints, resampling is performed using 3D spline interpolation. This technique smooths the time-series data and adjusts it to the required input size for the classifier:
-            </p>
-            <p>
-              $$ S_i(x) = a_i + b_i(x - x_i) + c_i(x - x_i)^2 + d_i(x - x_i)^3 $$
-            </p>
-            <p>
-              Here, \( x_i \) represents the position of a data point in the time-series, and \( S_i(x) \) is the interpolated value between data points \( x_i \) and \( x_{i+1} \). This ensures that the location fingerprints have uniform data lengths before being input into the 1D-CNN model for feature extraction.
-            </p>
-          
-            <h3 class="title is-4">Machine Learning Model</h3>
-            <p>
-              The machine learning model used is a one-dimensional convolutional neural network (1D-CNN) combined with ArcFace, a distance metric learning method. The lightweight 1D-CNN, with 2.07 MB and 12,842 parameters, consists of three convolutional layers with ReLU activation and pooling layers to reduce feature dimensionality.
-            </p>
-            <p>
-              ArcFace enhances location feature distinction by calculating similarity scores. It computes the inner product of input features and a class matrix, applying a margin to the correct class score. The 1D-CNN produces a 64-dimensional feature vector, which is used to determine whether two location fingerprints match based on the similarity score.
-            </p>         
-          </div>
-    </div>
-  </div>
-</section>
-<!-- Displaying the image in HTML -->
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-4"></h2>
-        <figure>
-          <img src="fig/propose.png" alt="Proposed Method Diagram">
-          <figcaption></figcaption>
-        </figure>
-      </div>
-    </div>
-  </div>
-</section>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Proposed Method Section -->
-<!-- Evaluation Results Section -->
-<section class="section evaluation-results">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-4">Ageing Robustness Evaluation</h2>
-        <p>
-          The evaluation used data from three sessions to assess the system's performance over time. Training was based on 80 data points from the first session, with testing on the remaining 20. Data pairs from different positions were undersampled for consistency. The evaluation metrics, including EER, AUC, and F1 score, are shown in the table below.
-        </p>        
-
-        <table class="table is-striped is-fullwidth">
-          <thead>
-            <tr>
-              <th>Session</th>
-              <th>EER (%)</th>
-              <th>AUC (%)</th>
-              <th>F1 (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Session 1-1</td>
-              <td>0.075</td>
-              <td>99.0</td>
-              <td>99.0</td>
-            </tr>
-            <tr>
-              <td>Session 1-2</td>
-              <td>0.89</td>
-              <td>99.4</td>
-              <td>98.2</td>
-            </tr>
-            <tr>
-              <td>Session 1-3</td>
-              <td>2.39</td>
-              <td>99.6</td>
-              <td>97.6</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h2 class="title is-4">User’s Property Change Robustness Evaluation</h2>
-        <p>
-          This evaluation tested the robustness of location fingerprints when the user's possessions changed. Using 400 data pairs per case, accuracy was the primary metric. The results show the method is robust to changes in the user’s items.
-        </p>        
-
-        <table class="table is-striped is-fullwidth">
-          <thead>
-            <tr>
-              <th>Case</th>
-              <th>Description</th>
-              <th>Accuracy</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Case 0</td>
-              <td>Smartphone in trouser pocket near doorknob</td>
-              <td>1.00</td>
-            </tr>
-            <tr>
-              <td>Case 1</td>
-              <td>Wearing wireless earphones</td>
-              <td>0.9725</td>
-            </tr>
-            <tr>
-              <td>Case 2</td>
-              <td>Wearing wireless earphones in the ears</td>
-              <td>1.00</td>
-            </tr>
-            <tr>
-              <td>Case 3</td>
-              <td>Holding a PC under arm (opposite side of doorknob)</td>
-              <td>1.00</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h2 class="title is-4">Evaluation of Location Fingerprints Obtained by Different Users</h2>
-        <p>
-          The system’s performance was evaluated across four users using 400 data pairs each, with accuracy as the primary metric. Users 1 and 2 showed high accuracy, while users 1 and 3 did not, suggesting the system may be affected by individual differences in door-opening actions.
-        </p>
-
-        <table class="table is-striped is-fullwidth">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Accuracy</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>User 0</td>
-              <td>1.00</td>
-            </tr>
-            <tr>
-              <td>User 1</td>
-              <td>0.585</td>
-            </tr>
-            <tr>
-              <td>User 2</td>
-              <td>1.00</td>
-            </tr>
-            <tr>
-              <td>User 3</td>
-              <td>0.54</td>
-            </tr>
-          </tbody>
-        </table>
-
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Evaluation Results Section -->
+  <!-- Load MathJax for rendering LaTeX -->
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
 
   <!-- Teaser video-->
   <section class="hero teaser">
@@ -371,42 +180,80 @@
   </section>
   <!-- End teaser video -->
 
-  <section class="section hero is-small is-light" id="Content2">
+  <section class="section hero is-small is-light" id="proposed_method">
     <div class="hero-body">
       <div class="container is-max-desktop content">
         <div class="columns is-centered">
           <div class="column is-full">
             <div class="content">
-              <h2 class="title is-3"><!-- Title--></h2>
+              <h2 class="title is-3">Proposed Method</h2>
               <div class="level-set has-text-justified">
                 <p>
-                  <!-- Overview of Algorithm-->
+                <h3 class="title is-4">Obtaining Sensor Information</h3>
+                <p>
+                  Magnetic and angular velocity data are collected along three axes. The magnetic data is used as the
+                  location fingerprint, while the angular velocity data assists in preprocessing the magnetic
+                  information.
                 </p>
-              </div>
-              <center>
-                <!-- Image -->
-              </center>
-            </div>
-          </div>
-        </div>
-      </div>
-  </section>
 
-  <section class="section hero is-small" id="Content3">
-    <div class="hero-body">
-      <div class="container is-max-desktop content">
-        <div class="columns is-centered">
-          <div class="column is-full">
-            <div class="content">
-              <h2 class="title is-3"><!-- Title --></h2>
-              <div class="level-set has-text-justified">
+                <h3 class="title is-4">Preprocessing</h3>
                 <p>
-                  <!--Detail of Algorithm-->
+                  Preprocessing involves several steps to prepare the data for analysis. First, high-frequency noise in
+                  the magnetic and angular velocity data is filtered using an RC low-pass filter to retain important
+                  low-frequency information:
+                </p>
+                <p>
+                  $$ S_{\text{filtered}} = \alpha \cdot S_{\text{current}} + (1 - \alpha) \cdot S_{\text{previous}} $$
+                </p>
+                <p>
+                  Here, \( S_{\text{filtered}} \) is the filtered sensor information, \( S_{\text{current}} \) is the
+                  newly acquired data, and \( S_{\text{previous}} \) represents the previously recorded data. The
+                  coefficient \( \alpha \) is set to 0.8.
+                </p>
+                <p>
+                  After filtering, the system extracts the specific action section related to door-opening by detecting
+                  peaks in the angular velocity data. This isolates the portion where the wrist rotates during doorknob
+                  manipulation. Next, normalization is applied to address internal magnetism fluctuations from the
+                  device, which can affect the magnetic data. The magnetic data is standardized using:
+                </p>
+                <p>
+                  $$ x' = \frac{x - \bar{x}}{s} $$
+                </p>
+                <p>
+                  Here, \( x' \) is the normalized data, \( x \) is the original data point, \( \bar{x} \) is the mean,
+                  and \( s \) is the standard deviation. This ensures data from different sessions can be consistently
+                  compared.
+                </p>
+                <p>
+                  To ensure uniform data lengths across all location fingerprints, resampling is performed using 3D
+                  spline interpolation. This technique smooths the time-series data and adjusts it to the required input
+                  size for the classifier:
+                </p>
+                <p>
+                  $$ S_i(x) = a_i + b_i(x - x_i) + c_i(x - x_i)^2 + d_i(x - x_i)^3 $$
+                </p>
+                <p>
+                  Here, \( x_i \) represents the position of a data point in the time-series, and \( S_i(x) \) is the
+                  interpolated value between data points \( x_i \) and \( x_{i+1} \). This ensures that the location
+                  fingerprints have uniform data lengths before being input into the 1D-CNN model for feature
+                  extraction.
+                </p>
+
+                <h3 class="title is-4">Machine Learning Model</h3>
+                <p>
+                  The machine learning model used is a one-dimensional convolutional neural network (1D-CNN) combined
+                  with ArcFace, a distance metric learning method. The lightweight 1D-CNN, with 2.07 MB and 12,842
+                  parameters, consists of three convolutional layers with ReLU activation and pooling layers to reduce
+                  feature dimensionality.
+                </p>
+                <p>
+                  ArcFace enhances location feature distinction by calculating similarity scores. It computes the inner
+                  product of input features and a class matrix, applying a margin to the correct class score. The 1D-CNN
+                  produces a 64-dimensional feature vector, which is used to determine whether two location fingerprints
+                  match based on the similarity score.
                 </p>
                 <center>
-                  <!--Image-->
-                  <!--<img src="static/images/overview_cfl.svg" alt="Class Favoritism Level Calculation"
-                    class="center-image">-->
+                  <p><img src="static/images/propose.png" alt="Proposed Method Diagram"></p>
                 </center>
               </div>
             </div>
@@ -415,22 +262,139 @@
       </div>
   </section>
 
-  <section class="section hero is-small is-light" id="Content4">
+  <section class="section hero is-small" id="ageing_robustness_evaluation">
     <div class="hero-body">
       <div class="container is-max-desktop content">
         <div class="columns is-centered">
           <div class="column is-full">
             <div class="content">
-              <h2 class="title is-3"><!-- Result--></h2>
-              <div class="level-set has-text-justified">
-                <p>
-                  <!-- Result-->
-                </p>
-                <center>
-                  <!-- Result Image/Table-->
-                </center>
-                </p>
-              </div>
+              <h2 class="title is-3">Ageing Robustness Evaluation</h2>
+              <p>
+                The evaluation used data from three sessions to assess the system's performance over time. Training was
+                based on 80 data points from the first session, with testing on the remaining 20. Data pairs from
+                different
+                positions were undersampled for consistency. The evaluation metrics, including EER, AUC, and F1 score,
+                are
+                shown in the table below.
+              </p>
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Session</th>
+                    <th>EER (%)</th>
+                    <th>AUC (%)</th>
+                    <th>F1 (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Session 1-1</td>
+                    <td>0.075</td>
+                    <td>99.0</td>
+                    <td>99.0</td>
+                  </tr>
+                  <tr>
+                    <td>Session 1-2</td>
+                    <td>0.89</td>
+                    <td>99.4</td>
+                    <td>98.2</td>
+                  </tr>
+                  <tr>
+                    <td>Session 1-3</td>
+                    <td>2.39</td>
+                    <td>99.6</td>
+                    <td>97.6</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+
+
+  <section class="section hero is-small is-light" id="user_property_change_robustness_evaluation">
+    <div class="hero-body">
+      <div class="container is-max-desktop content">
+        <div class="columns is-centered">
+          <div class="column is-full">
+            <div class="content">
+              <h2 class="title is-3">User’s Property Change Robustness Evaluationn</h2>
+              <p>
+                This evaluation tested the robustness of location fingerprints when the user's possessions changed.
+                Using
+                400 data pairs per case, accuracy was the primary metric. The results show the method is robust to
+                changes
+                in the user’s items.
+              </p>
+
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Case</th>
+                    <th>Description</th>
+                    <th>Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Case 0</td>
+                    <td>Smartphone in trouser pocket near doorknob</td>
+                    <td>1.00</td>
+                  </tr>
+                  <tr>
+                    <td>Case 1</td>
+                    <td>Wearing wireless earphones</td>
+                    <td>0.9725</td>
+                  </tr>
+                  <tr>
+                    <td>Case 2</td>
+                    <td>Wearing wireless earphones in the ears</td>
+                    <td>1.00</td>
+                  </tr>
+                  <tr>
+                    <td>Case 3</td>
+                    <td>Holding a PC under arm (opposite side of doorknob)</td>
+                    <td>1.00</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h2 class="title is-4">Evaluation of Location Fingerprints Obtained by Different Users</h2>
+              <p>
+                The system’s performance was evaluated across four users using 400 data pairs each, with accuracy as the
+                primary metric. Users 1 and 2 showed high accuracy, while users 1 and 3 did not, suggesting the system
+                may
+                be affected by individual differences in door-opening actions.
+              </p>
+
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Accuracy</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>User 0</td>
+                    <td>1.00</td>
+                  </tr>
+                  <tr>
+                    <td>User 1</td>
+                    <td>0.585</td>
+                  </tr>
+                  <tr>
+                    <td>User 2</td>
+                    <td>1.00</td>
+                  </tr>
+                  <tr>
+                    <td>User 3</td>
+                    <td>0.54</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
